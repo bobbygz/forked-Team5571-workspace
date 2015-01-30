@@ -88,8 +88,6 @@ public NetworkTable table;
         // SmartDashboard Buttons
         SmartDashboard.putData("Autonomous Command", new AutonomousCommand());
 
-        SmartDashboard.putData("Drive Train Command", new DriveTrainCommand());
-
         SmartDashboard.putData("Drive Train2 Command", new DriveTrain2Command());
 
 
