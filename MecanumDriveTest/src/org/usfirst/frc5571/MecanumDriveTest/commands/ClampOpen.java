@@ -37,7 +37,7 @@ public class  ClampOpen extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	
+    	Robot.clamp.clampPID();
     	Robot.clamp.openMotor();
     	Robot.clamp.showStatus();
     }
