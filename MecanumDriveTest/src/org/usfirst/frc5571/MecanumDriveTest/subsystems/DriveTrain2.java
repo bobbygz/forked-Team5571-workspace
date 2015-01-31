@@ -51,12 +51,12 @@ public class DriveTrain2 extends Subsystem {
     
 	public void mecanumDrive_Polar() {
 		robotDrive2.mecanumDrive_Polar(correctDeadSpot( Robot.oi.xboxController.getMagnitude() ), Robot.oi.xboxController.getDirectionDegrees(), (  (Robot.oi.xboxController.getRawAxis(2) * -1) + Robot.oi.xboxController.getRawAxis(3) )  );
-				
+		//robotDrive2.mecanumDrive_Polar(correctDeadSpot( Robot.oi.xboxController.getMagnitude() ), Robot.oi.xboxController.getDirectionDegrees(), (  (Robot.oi.xboxController.getRawAxis(2) * -1) + Robot.oi.xboxController.getRawAxis(3) )  );	
 		//The correct dead spot may only need to be on Direction, or on both.
 	}
 	
     public double correctDeadSpot(double value) {
-    	double deadZone = 0.15; 					//This sets a deadzone that i have seen works for Xboc controllers online
+    	double deadZone = 0.20; 					//This sets a deadzone that i have seen works for Xboc controllers online
         if (Math.abs(value) < deadZone ) 			//Checks value pulled from the double inside the methode against the deadzone.
                 return 0; 							// if less than the deadzone, returns nothing.
         return value; 								//Above deadzone just applies voltage.

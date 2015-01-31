@@ -32,6 +32,7 @@ public class Clamp extends Subsystem {
     
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
+    double Yaxis;
     
     public void stopMotor() {
     	cANTalonClamp.set(0);
@@ -58,8 +59,8 @@ public class Clamp extends Subsystem {
         
 
         SmartDashboard.putNumber("Motor Current", currentAmps);
-        SmartDashboard.putNumber("CANTalon1 Output Voltage", outputV);
-        SmartDashboard.putNumber("CANTalon1Bus Voltage", busV);
+        SmartDashboard.putNumber("cANTalonClamp Output Voltage", outputV);
+        SmartDashboard.putNumber("cANTalonClampBus Voltage", busV);
         SmartDashboard.putNumber("Encoder Position", quadEncoderPos);
         SmartDashboard.putNumber("Encoder Velocity", quadEncoderVelocity);
         SmartDashboard.putNumber("Position", selectedSensorPos);
@@ -69,15 +70,22 @@ public class Clamp extends Subsystem {
 
     
     public void clampPID() {
-    	double p = 0.1;
-    	double i = 0.001;
+    	double p = 1.0;
+    	double i = 0.01;
     	double d = 1;
-    	double f = .0001;
+    	double f = .001;
     	int izone = 0;
     	double ramprate = 36;
     	int profile = 0;
     	cANTalonClamp.setPID(p, i, d, f, izone, ramprate, profile);
-    	//cANTalonClamp.changeControlMode(CANTalon.ControlMode Speed);
+    	// Specify Quadrature Encoder
+    	cANTalonClamp.setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);
+    	cANTalonClamp.reverseSensor(true);
+
+    	// Initially set to run Open Loop Mode on joystick Y command
+    	cANTalonClamp.changeControlMode(CANTalon.ControlMode.Voltage);
+    	Yaxis = Robot.oi.xboxController.getY();
+    	cANTalonClamp.set(Yaxis);
     }
 
     public void initDefaultCommand() {
