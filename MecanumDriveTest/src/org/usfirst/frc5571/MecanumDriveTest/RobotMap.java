@@ -47,16 +47,16 @@ public class RobotMap {
         
         clampCANTalonClamp = new CANTalon(6);
         
-        driveTrain2CANTalon1 = new CANTalon(1);
+        driveTrain2CANTalon1 = new CANTalon(3);
         
         
         driveTrain2CANTalon2 = new CANTalon(4);
         
         
-        driveTrain2CANTalon3 = new CANTalon(2);
+        driveTrain2CANTalon3 = new CANTalon(1);
         
         
-        driveTrain2CANTalon4 = new CANTalon(3);
+        driveTrain2CANTalon4 = new CANTalon(2);
         
          
         driveTrain2RobotDrive2 = new RobotDrive(driveTrain2CANTalon1, driveTrain2CANTalon2,
