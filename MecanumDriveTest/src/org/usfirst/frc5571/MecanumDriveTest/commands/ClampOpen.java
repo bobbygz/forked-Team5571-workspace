@@ -31,13 +31,13 @@ public class  ClampOpen extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	Robot.clamp.initCanPID();
     	Robot.clamp.showStatus();
     	
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	Robot.clamp.clampPID();
     	Robot.clamp.openMotor();
     	Robot.clamp.showStatus();
     }
