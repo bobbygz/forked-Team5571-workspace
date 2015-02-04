@@ -12,7 +12,9 @@
 package org.usfirst.frc5571.MecanumDriveTest.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
+
 import org.usfirst.frc5571.MecanumDriveTest.Robot;
+import org.usfirst.frc5571.MecanumDriveTest.RobotMap;
 
 /**
  *
@@ -39,6 +41,7 @@ public class  ClampOpen extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	Robot.clamp.openMotor();
+    	Robot.clamp.checkMotorCurrent( 1.5 );
     	Robot.clamp.showStatus();
     }
 
@@ -56,7 +59,6 @@ public class  ClampOpen extends Command {
     // Called when another command which requires one or more of the same
     // subsystems is scheduled to run
     protected void interrupted() {
-    	Robot.clamp.stopMotor();
     	Robot.clamp.showStatus();
     	
     }

@@ -35,16 +35,29 @@ public class Clamp extends Subsystem {
     double Yaxis;
     
 	public void openMotor() {
-		SmartDashboard.putString("Mode", "Close: 6v");
+		SmartDashboard.putString("Mode", "Open: 3v");
 		cANTalonClamp.changeControlMode(CANTalon.ControlMode.PercentVbus);
-		cANTalonClamp.set(-.5);
+		cANTalonClamp.set(-.25);
 		SmartDashboard.putNumber("Motor Current", cANTalonClamp.getOutputCurrent());
 		// This portion of the code is designed to stop the robot from crushing
 		// the totes
 		// UNTESTED!!
-		if (cANTalonClamp.getOutputCurrent() > 4.50) {
+	}
+	
+	public void closeMotor() {
+		SmartDashboard.putString("Clamp Mode", "Close: 3v");
+		cANTalonClamp.changeControlMode(CANTalon.ControlMode.PercentVbus);
+		cANTalonClamp.set(.25);
+		SmartDashboard.putNumber("Motor Current", cANTalonClamp.getOutputCurrent());
+		// This portion of the code is designed to stop the robot from crushing
+		// the totes
+		// UNTESTED!!
+	}
+	
+	public void checkMotorCurrent(double value) {
+		if (cANTalonClamp.getOutputCurrent() > value) {
 			cANTalonClamp.changeControlMode(CANTalon.ControlMode.Position);
-
+			cANTalonClamp.set(cANTalonClamp.getPosition());
 		}
 	}
 
@@ -97,19 +110,6 @@ public class Clamp extends Subsystem {
 		cANTalonClamp.set(Yaxis);
 	}
 
-	public void closeMotor() {
-		SmartDashboard.putString("Mode", "Close: 6v");
-		cANTalonClamp.changeControlMode(CANTalon.ControlMode.PercentVbus);
-		cANTalonClamp.set(.5);
-		SmartDashboard.putNumber("Motor Current", cANTalonClamp.getOutputCurrent());
-		// This portion of the code is designed to stop the robot from crushing
-		// the totes
-		// UNTESTED!!
-		if (cANTalonClamp.getOutputCurrent() > 4.50) {
-			cANTalonClamp.changeControlMode(CANTalon.ControlMode.Position);
-
-		}
-	}
 	
     public void showStatus(){
         double currentAmps = cANTalonClamp.getOutputCurrent();
