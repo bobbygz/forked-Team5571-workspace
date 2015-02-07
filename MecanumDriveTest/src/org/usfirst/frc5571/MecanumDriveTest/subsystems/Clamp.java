@@ -32,106 +32,189 @@ public class Clamp extends Subsystem {
     
     // Put methods for controlling this subsystem
     // here. Call these from Commands.
-    double Yaxis;
-    
-	public void openMotor() {
-		SmartDashboard.putString("Mode", "Open: 3v");
-		cANTalonClamp.changeControlMode(CANTalon.ControlMode.PercentVbus);
-		cANTalonClamp.set(-.25);
-		SmartDashboard.putNumber("Motor Current", cANTalonClamp.getOutputCurrent());
-		// This portion of the code is designed to stop the robot from crushing
-		// the totes
-		// UNTESTED!!
-	}
-	
-	public void closeMotor() {
-		SmartDashboard.putString("Clamp Mode", "Close: 3v");
-		cANTalonClamp.changeControlMode(CANTalon.ControlMode.PercentVbus);
-		cANTalonClamp.set(.25);
-		SmartDashboard.putNumber("Motor Current", cANTalonClamp.getOutputCurrent());
-		// This portion of the code is designed to stop the robot from crushing
-		// the totes
-		// UNTESTED!!
-	}
-	
-	public void checkMotorCurrent(double value) {
-		if (cANTalonClamp.getOutputCurrent() > value) {
-			cANTalonClamp.changeControlMode(CANTalon.ControlMode.Position);
-			cANTalonClamp.set(cANTalonClamp.getPosition());
-		}
-	}
+	double axis;
+	static double MAX_CLAMP_CURRENT = 3.0;  // limit current to 3A  motor is rated at 36.91W
+	static double CLOSE_SPEED = 320;  // position change per 10 ms
+	static double OPEN_SPEED = -320;  // position change per 10 ms
+	double p;
+	double i;
+	double d;
+	double f;
+	int izone;
+	double ramprate;  // this should leave the ramp rate uncapped.
+	int profile;
+	boolean servoHereFlag;
+	double servoAtThisPosition;
+
+
 
 	public void initCanPID() {
 
-		// Set PID values here
-		double p = 1;
-		double i = 0.001;
-		double d = .1;
-		double f = 0;
-		int izone = 0;
-		double ramprate = 36;
-		int profile = 0;
+		// Set PID values for Velocity and Position Mode here in profile 0 for gripper
+		p = 5;
+		i = 0.0002;
+		d = .08;
+		f = 0;
+		izone = 0;
+		ramprate = 0;  // this should leave the ramp rate uncapped.
+		profile = 0;
+		cANTalonClamp.setPID(p, i, d, f, izone, ramprate, profile);
+
+		// Set PID values for Servo In Place Posisiotn Mode here in profile 1 for gripper
+		p = 5;
+		i = 0.0002;
+		d = .08;
+		f = 0;
+		izone = 0;
+		ramprate = 0;  // this should leave the ramp rate uncapped.
+		profile = 1;
 		cANTalonClamp.setPID(p, i, d, f, izone, ramprate, profile);
 
 		// Specify Quadrature Encoder
 		cANTalonClamp.setFeedbackDevice(CANTalon.FeedbackDevice.QuadEncoder);
 		cANTalonClamp.reverseSensor(true);
 		//Reverse = true for gripper motor
-		//Reverse = false for pulley
+		//Reverse = false for elevator
 
 		// Initially set to run Open Loop Mode on joystick Y command. 
-		cANTalonClamp.changeControlMode(CANTalon.ControlMode.PercentVbus);
-		Yaxis = Robot.oi.xboxController.getY();
-		cANTalonClamp.set(Yaxis); //This will not work because this is only initialized at the start.
+		//		cANTalonClamp.changeControlMode(CANTalon.ControlMode.Voltage);
+		//		axis = Robot.oi.xboxController.getY();
+		//		cANTalonClamp.set(axis); //This will not work because this is only initialized at the start.
 	}
-	
+
 	// Change to closed loop control mode and hold the current position
 	public void positionMode() {
+		servoHereFlag = false;
+		cANTalonClamp.setProfile(0);
 		cANTalonClamp.changeControlMode(CANTalon.ControlMode.Position);
 		cANTalonClamp.set(cANTalonClamp.getPosition());
+		SmartDashboard.putString("Servo Status", "Servo Inactive");
 	}
-	
+
 	// Change to closed loop control mode and move "count" ticks 
 	public void positionMoveByCount(double count) {
+		servoHereFlag = false;
+		cANTalonClamp.setProfile(0);
 		cANTalonClamp.changeControlMode(CANTalon.ControlMode.Position);
 		cANTalonClamp.set((cANTalonClamp.getPosition()+count));
+		SmartDashboard.putString("Servo Status", "Servo Inactive");
+
 	}
 
 	// Change to Closed Loop Velocity Mode and
 	public void speedMode() {
+		servoHereFlag = false;
+		cANTalonClamp.setProfile(0);
 		cANTalonClamp.changeControlMode(CANTalon.ControlMode.Speed);
-		Yaxis = Robot.oi.xboxController.getY();
-		cANTalonClamp.set(Yaxis*12.0); // need to scale the voltage by the joystick values;
+		axis = Robot.oi.xboxController.getY();
+		cANTalonClamp.set(axis*12.0); // need to scale the voltage by the joystick values;
+		SmartDashboard.putString("Servo Status", "Servo Inactive");
+
+	}
+
+	public void clampClose() {
+		servoHereFlag = false;
+		cANTalonClamp.setProfile(0);
+		cANTalonClamp.changeControlMode(CANTalon.ControlMode.Speed);
+		cANTalonClamp.set(CLOSE_SPEED);
+		SmartDashboard.putString("Servo Status", "Servo Inactive");
+
+	}
+
+	public void clampOpen() {
+		servoHereFlag = false;
+		cANTalonClamp.setProfile(0);
+		cANTalonClamp.changeControlMode(CANTalon.ControlMode.Speed);
+		cANTalonClamp.set(OPEN_SPEED);
+		SmartDashboard.putString("Servo Status", "Servo Inactive");
+
+	}
+
+	public void servoHere(){
+		if (!servoHereFlag){ // first time through, so set flag and get the current position
+			servoHereFlag = true;
+			servoAtThisPosition = cANTalonClamp.getPosition()+16;
+			cANTalonClamp.setProfile(1);
+
+		}
+		if (!clampCuurenLimited()){
+			cANTalonClamp.changeControlMode(CANTalon.ControlMode.Position);
+			cANTalonClamp.set(servoAtThisPosition);
+			SmartDashboard.putString("Servo Status", "ServoActive");
+		}
+		else{
+			cANTalonClamp.changeControlMode(CANTalon.ControlMode.PercentVbus);
+			cANTalonClamp.set(0);
+			SmartDashboard.putString("Servo Status", "CurrentLimited");
+		}
+	}
+
+	public void holdCurrentPosition(){
+		servoHereFlag = false;
+		cANTalonClamp.setProfile(0);
+		cANTalonClamp.changeControlMode(CANTalon.ControlMode.Position);
+		cANTalonClamp.set(cANTalonClamp.getPosition());
+	}
+
+	public void disable_ClampMotor(){
+		servoHereFlag = false;
+		cANTalonClamp.setProfile(0);
+		cANTalonClamp.changeControlMode(CANTalon.ControlMode.PercentVbus);
+		cANTalonClamp.set(0);
+		SmartDashboard.putString("Servo Status", "Servo Inactive");
 	}
 
 	public void voltageMode() {
+		servoHereFlag = false;
+		cANTalonClamp.setProfile(0);
 		cANTalonClamp.changeControlMode(CANTalon.ControlMode.Voltage);
-		Yaxis = Robot.oi.xboxController.getY();
-		cANTalonClamp.set(Yaxis);
+		axis = Robot.oi.xboxController.getY();
+		cANTalonClamp.set(axis);
+		SmartDashboard.putString("Servo Status", "Servo Inactive");
+	}
+	
+	public Boolean clampCuurenLimited(){ 
+		return(cANTalonClamp.getOutputCurrent() > MAX_CLAMP_CURRENT);
 	}
 
+//	public void goForward() {
+//		servoHereFlag = false;
+//		cANTalonClamp.setProfile(0);
+//		SmartDashboard.putString("Motor Command", "Forward");
+//		cANTalonClamp.set(0.1 * (Robot.oi.yAxis));
+//		SmartDashboard.putNumber("Motor Current", cANTalonClamp.getOutputCurrent());
+//		SmartDashboard.putString("Servo Status", "Servo Inactive");
+//	}
 	
-    public void showStatus(){
-        double currentAmps = cANTalonClamp.getOutputCurrent();
-        double outputV = cANTalonClamp.getOutputVoltage();
-        double busV = cANTalonClamp.getBusVoltage();
-        double quadEncoderPos = cANTalonClamp.getEncPosition();
-        double quadEncoderVelocity = cANTalonClamp.getEncVelocity();
-        double selectedSensorPos = cANTalonClamp.getPosition();
-        double selectedSensorSpeed = cANTalonClamp.getSpeed();
-        int    closeLoopErr = cANTalonClamp.getClosedLoopError();
-        
-        
-
-        SmartDashboard.putNumber("Motor Current", currentAmps);
-        SmartDashboard.putNumber("cANTalonClamp Output Voltage", outputV);
-        SmartDashboard.putNumber("cANTalonClampBus Voltage", busV);
-        SmartDashboard.putNumber("Encoder Position", quadEncoderPos);
-        SmartDashboard.putNumber("Encoder Velocity", quadEncoderVelocity);
-        SmartDashboard.putNumber("Position", selectedSensorPos);
-        SmartDashboard.putNumber("Speed", selectedSensorSpeed);
-        SmartDashboard.putNumber("Position Error", closeLoopErr);
-    }
+	
+	
+//	public void showCanTalonStatus() {
+//
+//		double currentAmps = cANTalonClamp.getOutputCurrent();
+//		double outputV = cANTalonClamp.getOutputVoltage();
+//		double busV = cANTalonClamp.getBusVoltage();
+//		double quadEncoderPos = cANTalonClamp.getEncPosition();
+//		double quadEncoderVelocity = cANTalonClamp.getEncVelocity();
+//		double selectedSensorPos = cANTalonClamp.getPosition();
+//		double selectedSensorSpeed = cANTalonClamp.getSpeed();
+//		int closeLoopErr = cANTalonClamp.getClosedLoopError();
+//
+//		//Timer.delay(.5); //Why do you have a delay on the outputs to the smart dashbaord?
+//		{
+//			SmartDashboard.putNumber("Motor Current", currentAmps);
+//			SmartDashboard.putNumber("cANTalonClamp Output Voltage", outputV);
+//			SmartDashboard.putNumber("cANTalonClampBus Voltage", busV);
+//			SmartDashboard.putNumber("Encoder Position", quadEncoderPos);
+//			SmartDashboard.putNumber("Encoder Velocity", quadEncoderVelocity);
+//			SmartDashboard.putNumber("Position", selectedSensorPos);
+//			SmartDashboard.putNumber("Speed", selectedSensorSpeed);
+//			SmartDashboard.putNumber("Position Error", closeLoopErr);
+//			SmartDashboard.putBoolean("ServoHere Flag", servoHereFlag);
+//
+//
+//		}
+//
+//	}
     public void initDefaultCommand() {
         // BEGIN AUTOGENERATED CODE, SOURCE=ROBOTBUILDER ID=DEFAULT_COMMAND
         setDefaultCommand(new ClampStop());

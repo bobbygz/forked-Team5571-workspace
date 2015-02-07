@@ -70,6 +70,7 @@ public class Robot extends IterativeRobot {
 
     public void disabledPeriodic() {
         Scheduler.getInstance().run();
+        updateStatus();
     }
 
     public void autonomousInit() {
@@ -96,6 +97,7 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
+    	updateStatus();
         Scheduler.getInstance().run();
     }
 
@@ -104,5 +106,8 @@ public class Robot extends IterativeRobot {
      */
     public void testPeriodic() {
         LiveWindow.run();
+    }
+    public void updateStatus() {
+    	Robot.oi.updateStatusOI();
     }
 }
