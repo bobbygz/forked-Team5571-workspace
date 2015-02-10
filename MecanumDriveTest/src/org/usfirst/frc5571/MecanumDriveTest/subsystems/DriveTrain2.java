@@ -51,18 +51,9 @@ public class DriveTrain2 extends Subsystem {
     
     
 	public void mecanumDrive_Polar() {
-//		RobotMap.driveTrain2CANTalon3.setInvertedMotor(MotorType.kFrontLeft, true);
-//		RobotMap.driveTrain2CANTalon3.setInvertedMotor(MotorType.kFrontLeft, true);
-//	    RobotMap.driveTrain2CANTalon4.reverseOutput(true);
 	    double triggerTwist = (Robot.oi.xboxController.getRawAxis(2) * -1) + Robot.oi.xboxController.getRawAxis(3);  
-	    //robotDrive2.mecanumDrive_Polar(.5, 0, 0);
 	    robotDrive2.mecanumDrive_Polar(correctDeadSpot( Robot.oi.xboxController.getMagnitude() ), Robot.oi.xboxController.getDirectionDegrees(), triggerTwist);
 		SmartDashboard.putNumber("Triggers Together:", triggerTwist);
-//		RobotMap.driveTrain2CANTalon1.set(.5);
-//		RobotMap.driveTrain2CANTalon2.set(.5);
-//		RobotMap.driveTrain2CANTalon3.set(.5);
-//		RobotMap.driveTrain2CANTalon4.set(.5);
-		//The correct dead spot may only need to be on Direction, or on both.
 		
 	}
 	
