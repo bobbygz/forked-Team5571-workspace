@@ -12,19 +12,14 @@
 package org.usfirst.frc5571.RobotFinal.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import org.usfirst.frc5571.RobotFinal.Robot;
-import org.usfirst.frc5571.RobotFinal.subsystems.Clamp;
 
 /**
  *
  */
-public class  ClampOpen extends Command {
-	boolean position_held;
-	private Clamp clampController = Robot.clamp;
+public class  Abort extends Command {
 
-    public ClampOpen() {
+    public Abort() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
 
@@ -35,32 +30,17 @@ public class  ClampOpen extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
-		clampController.initCanPID();
-		SmartDashboard.putString("Clamp MODE:", "Initialized");
-		position_held = false;
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	position_held = false;
-		  if (!clampController.clampCurrenLimited()){
-			clampController.openClamp();
-				SmartDashboard.putString("Clamp MODE:", "Opening");
-			}
-			else{ // current limit exceeded
-				if (!position_held) {
-					clampController.holdCurrentPosition();
-					SmartDashboard.putString("Clamp MODE:", "OPEN CURRENT EXCEEDED");
-					position_held = true;
-				}
-				clampController.servoHere();
-			}
-  }
-
+    	Robot.clamp.disable_ClampMotor();
+    	Robot.elevator.disable_ElevMotor();
+    	Robot.driveTrain.disable_Drive();
+    }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
-    	clampController.showCanTalonStatus();
         return false;
     }
 

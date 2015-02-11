@@ -12,13 +12,17 @@
 package org.usfirst.frc5571.RobotFinal.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import org.usfirst.frc5571.RobotFinal.Robot;
+import org.usfirst.frc5571.RobotFinal.subsystems.Elevator;
 
 /**
  *
  */
 public class  ElevatorStop extends Command {
-
+	private Elevator elevController = Robot.elevator;
+	boolean position_held;
     public ElevatorStop() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
@@ -30,14 +34,19 @@ public class  ElevatorStop extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+		elevController.initCanPID();
+		SmartDashboard.putString("Clamp MODE:", "Initialized");
+		position_held = false;
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
+    	elevController.servoHere();
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
+    	elevController.showCanTalonStatus();
         return false;
     }
 

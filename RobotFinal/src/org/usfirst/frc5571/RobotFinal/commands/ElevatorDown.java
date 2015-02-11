@@ -12,13 +12,17 @@
 package org.usfirst.frc5571.RobotFinal.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import org.usfirst.frc5571.RobotFinal.Robot;
+import org.usfirst.frc5571.RobotFinal.subsystems.Elevator;
 
 /**
  *
  */
 public class  ElevatorDown extends Command {
-
+	private Elevator elevController = Robot.elevator;
+	boolean position_held;
     public ElevatorDown() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
@@ -30,14 +34,31 @@ public class  ElevatorDown extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+		elevController.initCanPID();
+		SmartDashboard.putString("Elev MODE:", "Initialized");
+		position_held = false;
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
+    	position_held = false;
+		  if (!elevController.elevCurrenLimited()){
+			elevController.downElev();
+				SmartDashboard.putString("Elev MODE:", "Opening");
+			}
+			else{ // current limit exceeded
+				if (!position_held) {
+					elevController.holdCurrentPosition();
+					SmartDashboard.putString("Elev MODE:", "OPEN CURRENT EXCEEDED");
+					position_held = true;
+				}
+				elevController.servoHere();
+			}
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
+    	elevController.showCanTalonStatus();
         return false;
     }
 

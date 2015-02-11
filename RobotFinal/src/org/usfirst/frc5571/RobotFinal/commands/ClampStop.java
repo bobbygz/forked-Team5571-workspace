@@ -14,15 +14,20 @@ package org.usfirst.frc5571.RobotFinal.commands;
 import edu.wpi.first.wpilibj.command.Command;
 
 
+
+
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import org.usfirst.frc5571.RobotFinal.Robot;
+import org.usfirst.frc5571.RobotFinal.subsystems.Clamp;
 
 /**
  *
  */
 public class  ClampStop extends Command {
-	
 	boolean position_held;
-	
+	private Clamp clampController = Robot.clamp;
     public ClampStop() {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
@@ -34,14 +39,19 @@ public class  ClampStop extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+		clampController.initCanPID();
+		SmartDashboard.putString("Clamp MODE:", "Initialized");
+		position_held = false;
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
+    	clampController.servoHere();
     }
 
     // Make this return true when this Command no longer needs to run execute()
     protected boolean isFinished() {
+    	clampController.showCanTalonStatus();
         return false;
     }
 
