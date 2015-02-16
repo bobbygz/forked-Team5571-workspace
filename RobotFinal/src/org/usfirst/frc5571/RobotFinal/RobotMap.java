@@ -62,6 +62,6 @@ public class RobotMap {
         clampCANTalonClamp = new CANTalon(6);
         
         
-        elevatorCANTalonElev = new CANTalon(7);
+        elevatorCANTalonElev = new CANTalon(5);
     }
 }

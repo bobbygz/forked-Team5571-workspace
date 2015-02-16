@@ -11,7 +11,10 @@
 
 package org.usfirst.frc5571.RobotFinal.commands;
 
+import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.command.Command;
+
+import org.usfirst.frc5571.RobotFinal.RobotMap;
 import org.usfirst.frc5571.RobotFinal.Robot;
 
 /**
@@ -31,7 +34,7 @@ public class  DriveTrainCommand extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	
+    	Robot.driveTrain.initInvert();
     }
 
     // Called repeatedly when this Command is scheduled to run
@@ -53,6 +56,5 @@ public class  DriveTrainCommand extends Command {
     // subsystems is scheduled to run
     protected void interrupted() {
     	Robot.driveTrain.disable_Drive();
-    	
     }
 }

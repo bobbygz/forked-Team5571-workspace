@@ -21,6 +21,12 @@ Children:
         name: Default Command, type: Command, validators: null, value: ElevatorStop}
     Base: Subsystem
     Name: Elevator
+  - Children: []
+    Properties:
+      Default Command: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
+        name: Default Command, type: Command, validators: null, value: Camera}
+    Base: Subsystem
+    Name: Cameras
   Properties: {}
   Base: Subsystems
   Name: Subsystems
@@ -84,13 +90,13 @@ Children:
           default: '1'
           name: Button
           validators: null
-          value: '3'
+          value: '5'
         Command: !!robotbuilder.data.properties.TypeSelectionProperty
           default: None
           name: Command
           type: Command
           validators: *id002
-          value: ElevatorDown
+          value: ClampOpen
         When to Run: !!robotbuilder.data.properties.ChoicesProperty
           choices: *id003
           default: whileHeld
@@ -108,13 +114,13 @@ Children:
           default: '1'
           name: Button
           validators: null
-          value: '4'
+          value: '6'
         Command: !!robotbuilder.data.properties.TypeSelectionProperty
           default: None
           name: Command
           type: Command
           validators: *id002
-          value: ElevatorUp
+          value: ClampClose
         When to Run: !!robotbuilder.data.properties.ChoicesProperty
           choices: *id003
           default: whileHeld
@@ -122,7 +128,7 @@ Children:
           validators: null
           value: whileHeld
       Base: Joystick Button
-      Name: Bumpr_R
+      Name: Bumper_R
     - Children: []
       Properties:
         Joystick: !!robotbuilder.data.properties.ParentProperty {default: parent,
@@ -187,7 +193,7 @@ Children:
   - Children: []
     Properties:
       Requires: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
-        name: Requires, type: Subsystem, validators: null, value: None}
+        name: Requires, type: Subsystem, validators: null, value: Clamp}
       Button on SmartDashboard: !!robotbuilder.data.properties.BooleanProperty {default: true,
         name: Button on SmartDashboard, validators: null, value: false}
     Base: Command
@@ -203,7 +209,7 @@ Children:
   - Children: []
     Properties:
       Requires: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
-        name: Requires, type: Subsystem, validators: null, value: None}
+        name: Requires, type: Subsystem, validators: null, value: Elevator}
       Button on SmartDashboard: !!robotbuilder.data.properties.BooleanProperty {default: true,
         name: Button on SmartDashboard, validators: null, value: false}
     Base: Command
@@ -232,6 +238,14 @@ Children:
         name: Button on SmartDashboard, validators: null, value: true}
     Base: Command
     Name: Abort
+  - Children: []
+    Properties:
+      Requires: !!robotbuilder.data.properties.TypeSelectionProperty {default: None,
+        name: Requires, type: Subsystem, validators: null, value: Cameras}
+      Button on SmartDashboard: !!robotbuilder.data.properties.BooleanProperty {default: true,
+        name: Button on SmartDashboard, validators: null, value: true}
+    Base: Command
+    Name: Camera
   Properties: {}
   Base: Commands
   Name: Commands
